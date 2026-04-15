@@ -1,0 +1,41 @@
+name: dhis2-project
+description: null
+collections: null
+credentials:
+  demo@openfn.org-DHIS2-play:
+    name: DHIS2 play
+    owner: demo@openfn.org
+workflows:
+  DHIS2-to-Sheets:
+    name: DHIS2 to Sheets
+    jobs:
+      Get-DHIS2-data:
+        name: Get DHIS2 data
+        adaptor: '@openfn/language-dhis2@latest'
+        credential: demo@openfn.org-DHIS2-play
+        body: |
+          get('trackedEntityInstances/PQfMcpmXeFE');
+
+      Upload-to-Google-Sheet:
+        name: Upload to Google Sheet
+        adaptor: '@openfn/language-http@latest'
+        credential: null
+        body: |
+          fn(state => state);
+
+    triggers:
+      cron:
+        type: cron
+        cron_expression: '0 * * * *'
+        enabled: false
+    edges:
+      cron->Get-DHIS2-data:
+        source_trigger: cron
+        target_job: Get-DHIS2-data
+        condition_type: always
+        enabled: true
+      Get-DHIS2-data->Upload-to-Google-Sheet:
+        source_job: Get-DHIS2-data
+        target_job: Upload-to-Google-Sheet
+        condition_type: on_job_success
+        enabled: true

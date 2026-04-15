@@ -1,0 +1,73 @@
+{
+  "env": null,
+  "id": "fd0d370e-83e1-4018-8f0b-73a3da535ad5",
+  "name": "dhis2-project",
+  "description": null,
+  "color": null,
+  "concurrency": null,
+  "inserted_at": "2026-04-15T00:01:07Z",
+  "updated_at": "2026-04-15T00:01:07Z",
+  "parent_id": null,
+  "scheduled_deletion": null,
+  "history_retention_period": null,
+  "dataclip_retention_period": null,
+  "retention_policy": "retain_all",
+  "project_credentials": {
+    "demo@openfn.org-DHIS2-play": {
+      "id": "eb3796a6-cfa4-4f29-bafe-2d2d27b3db7e",
+      "name": "DHIS2 play",
+      "owner": "demo@openfn.org"
+    }
+  },
+  "collections": {},
+  "workflows": {
+    "DHIS2-to-Sheets": {
+      "id": "41168248-f2cb-4ce4-a6cc-c541a2835ff6",
+      "name": "DHIS2 to Sheets",
+      "inserted_at": "2026-04-15T00:01:07.435215Z",
+      "lock_version": 4,
+      "triggers": {
+        "cron": {
+          "enabled": false,
+          "id": "12d83f37-34f2-4afe-87e8-65baf1c471ce",
+          "type": "cron",
+          "cron_expression": "0 * * * *"
+        }
+      },
+      "jobs": {
+        "Get-DHIS2-data": {
+          "id": "9c42231b-54b0-4d89-aafa-df8f00ea14ba",
+          "name": "Get DHIS2 data",
+          "body": "get('trackedEntityInstances/PQfMcpmXeFE');\n",
+          "project_credential_id": "eb3796a6-cfa4-4f29-bafe-2d2d27b3db7e",
+          "adaptor": "@openfn/language-dhis2@latest"
+        },
+        "Upload-to-Google-Sheet": {
+          "id": "b42c99bc-a818-4749-a50e-1efdcd2f9b06",
+          "name": "Upload to Google Sheet",
+          "body": "fn(state => state);\n",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-http@latest"
+        }
+      },
+      "edges": {
+        "cron->Get-DHIS2-data": {
+          "enabled": true,
+          "id": "889fddad-76ee-465a-afa0-222d2e985bf3",
+          "target_job_id": "9c42231b-54b0-4d89-aafa-df8f00ea14ba",
+          "source_trigger_id": "12d83f37-34f2-4afe-87e8-65baf1c471ce",
+          "condition_type": "always"
+        },
+        "Get-DHIS2-data->Upload-to-Google-Sheet": {
+          "enabled": true,
+          "id": "679d1d5a-fedd-4874-9d82-fae2c189a8dd",
+          "target_job_id": "b42c99bc-a818-4749-a50e-1efdcd2f9b06",
+          "source_job_id": "9c42231b-54b0-4d89-aafa-df8f00ea14ba",
+          "condition_type": "on_job_success"
+        }
+      }
+    }
+  },
+  "allow_support_access": false,
+  "requires_mfa": false
+}
